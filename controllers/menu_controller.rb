@@ -15,7 +15,7 @@
      puts "2 - Create an entry"
      puts "3 - Search for an entry"
      puts "4 - Import entries from a CSV"
-     puts "5 - View Entry n"
+     puts "5 - Nuke all entries"
      puts "6 - Exit"
      print "Enter your selection: "
  
@@ -42,7 +42,8 @@
        main_menu
      when 5
         system "clear"
-        entry_n_submenu
+        @address_book.nuke
+        puts "All entries deleted!"
         main_menu
         
      when 6
@@ -87,6 +88,19 @@
        puts entry.to_s
  # #15
        entry_submenu(entry)
+       
+       print "Search by name: "
+     name = gets.chomp
+
+     match = @address_book.binary_search(name)
+     system "clear"
+     
+     if match
+       puts match.to_s
+       search_submenu(match)
+     else
+       puts "No match found for #{name}"
+     end
      end
  
      system "clear"
@@ -108,7 +122,10 @@
      when "n"
  # #19
      when "d"
+      delete_entry(entry)
      when "e"
+      edit_entry(entry)
+      entry_submenu(entry)
  # #20
      when "m"
        system "clear"
@@ -136,6 +153,76 @@
    end
  
    def read_csv
+    # #1 new csv file
+    print "Enter CSV file to import:"
+    file_name = gets.chomp
+    
+    # #2 main_menu
+    if file_name.empty?
+     system "clear"
+     puts "no CSV file read"
+     main_menu
+    end
+    
+    # #3 import to address_book
+    begin
+     entry_count = @address_book.import_from_csv(file_name).count
+     system "clear"
+     puts "#{entry_count} new entries added from #{file_name}"
+    rescue
+     puts "#{file_name} is not a valid CSV file, please enter the name of a valid CSV file"
+     read_csv
+    end
    end
- end
-end     
+   
+   def delete_entry(entry)
+    @address_book.entries.delete(entry)
+    puts "#{entry,name} had been deleted"
+   end
+   
+   def edit_entry(entry)
+ # #4
+     print "Updated name:"
+     name = gets.chomp
+     print "Updated phone number:"
+     phone_number = gets.chomp
+     print "Updated email:"
+     email = gets.chomp
+ # #5
+     entry.name = name if !name.empty?
+     entry.phone_number = phone_number if !phone_number.empty?
+     entry.email = email if !email.empty?
+     system "clear"
+     puts "Updated entry:"
+     puts entry
+   end
+   
+    def search_submenu(entry)
+     puts "\nd - delete entry"
+     puts "e - edit this entry"
+     puts "m - return to main menu"
+     selection = gets.chomp
+ 
+     case selection
+     when "d"
+       system "clear"
+       delete_entry(entry)
+       main_menu
+     when "e"
+       edit_entry(entry)
+       system "clear"
+       main_menu
+     when "m"
+       system "clear"
+       main_menu
+     else
+       system "clear"
+       puts "#{selection} is not a valid input"
+       puts entry.to_s
+       search_submenu(entry)
+     end
+   end
+   
+   end
+  end
+ end     

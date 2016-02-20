@@ -11,6 +11,18 @@
     expect(entry.email).to eq expected_email
   end
   
+  describe "#nuke" do
+  it "should delete all entries" do
+     book.add_entry("Chirag Patel", "123.456.7890", "chirag47@gmail.com")
+     book.add_entry("Chirag Patel", "123.456.7890", "chirag47@gmail.com")
+     book.add_entry("Chirag Patel", "123.456.7890", "chirag47@gmail.com")
+     
+     book.nuke
+     expect(book.entries.size).to eq 0
+    end
+
+ end
+  
   # # 2 Test fn
    describe "attributes" do
        
